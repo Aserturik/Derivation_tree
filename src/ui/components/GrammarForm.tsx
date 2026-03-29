@@ -7,6 +7,7 @@ interface GrammarFormProps {
 }
 
 interface ProductionRow {
+  id: string;
   left: string;
   right: string;
 }
@@ -15,14 +16,15 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
   const [terminals, setTerminals] = useState("");
   const [nonTerminals, setNonTerminals] = useState("");
   const [axiom, setAxiom] = useState("");
-  const [productionRows, setProductionRows] = useState<ProductionRow[]>([
-    { left: "", right: "" },
+    const [productionRows, setProductionRows] = useState<ProductionRow[]>([
+    { left: "", right: "", id: Math.random().toString(36).substr(2, 9) },
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addRow = () => {
-    setProductionRows([...productionRows, { left: "", right: "" }]);
+    setProductionRows([...productionRows, { left: "", right: "", id: Math.random().toString(36).substr(2, 9) }]);
   };
+
 
   const removeRow = (index: number) => {
     setProductionRows(productionRows.filter((_, i) => i !== index));
@@ -112,6 +114,10 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
     boxSizing: "border-box",
     backgroundColor: "#ffffff",
     color: "#1f2937",
+    WebkitTextFillColor: "#1f2937",
+    // Sobrescribir el estilo de autofill de los navegadores
+    boxShadow: "0 0 0px 1000px white inset",
+    transition: "background-color 5000s ease-in-out 0s",
   };
 
   const buttonStyle: React.CSSProperties = {
@@ -215,7 +221,7 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <label style={labelStyle}>Producciones</label>
+        <h3 style={{ ...labelStyle, margin: 0 }}>Producciones</h3>
         {errors.productions && (
           <span
             style={{ color: "#ef4444", fontSize: "12px", marginBottom: "4px" }}
@@ -225,7 +231,7 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
         )}
         {productionRows.map((row, index) => (
           <div
-            key={`prod-row-${index}`}
+            key={row.id}
             style={{ display: "flex", flexDirection: "column", gap: "4px" }}
           >
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -244,7 +250,7 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
                     : "#d1d5db",
                 }}
               >
-                <option value="">NT</option>
+                <option value="" disabled>—</option>
                 {nonTerminals
                   .split(",")
                   .map((s) => s.trim())

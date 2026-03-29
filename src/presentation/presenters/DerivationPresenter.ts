@@ -14,7 +14,10 @@ export class DerivationPresenter {
     this.engine = new DerivationEngine(grammar);
   }
 
-  public validate(word: string): WordValidationState {
+  public async validate(word: string): Promise<WordValidationState> {
+    // Simulamos un delay mínimo para feedback de carga si es instantáneo
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     const validation = this.engine.validateWord(word);
     let xml: string | undefined;
 

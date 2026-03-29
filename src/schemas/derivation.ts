@@ -15,6 +15,17 @@ export class DerivationEngine {
 
   public validateWord(word: string): ValidationResult {
     this.nodeIdCounter = 0;
+
+    // Validación previa: ¿Contiene símbolos que no están en la gramática?
+    for (const char of word) {
+      if (!this.grammar.terminals.includes(char)) {
+        return {
+          isValid: false,
+          word,
+          error: `Símbolo inválido: '${char}' no es un terminal de la gramática.`
+        };
+      }
+    }
     
     const root: DerivationNode = {
       id: this.getNextId(),

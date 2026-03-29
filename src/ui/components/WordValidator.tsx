@@ -9,14 +9,32 @@ interface WordValidatorProps {
 export const WordValidator = ({ grammar }: WordValidatorProps) => {
   const [word, setWord] = useState("");
   const [result, setResult] = useState<WordValidationState | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Instanciamos el presenter solo cuando cambia la gramática
   const presenter = useMemo(() => new DerivationPresenter(grammar), [grammar]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Limpiar resultado al cambiar la palabra para evitar confusión de errores "congelados"
+  const handleWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWord(e.target.value);
+    if (result) setResult(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validationResult = presenter.validate(word);
-    setResult(validationResult);
+    if (!word.trim()) return;
+
+    setIsLoading(true);
+    setResult(null); // Limpiar previo
+
+    try {
+      const validationResult = await presenter.validate(word);
+      setResult(validationResult);
+    } catch (error) {
+      console.error("Error validando palabra:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,36 +54,58 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
           <input
             id="wordToValidate"
             value={word}
-            onChange={(e) => setWord(e.target.value)}
+            onChange={handleWordChange}
             placeholder="Ej: abba"
+            disabled={isLoading}
             style={{
               padding: "12px",
               borderRadius: "6px",
               border: "1px solid #d1d5db",
               fontSize: "16px",
-              outline: "none"
+              outline: "none",
+              backgroundColor: isLoading ? "#f3f4f6" : "white",
+              color: "#1f2937",
+              WebkitTextFillColor: "#1f2937",
+              boxShadow: "0 0 0px 1000px white inset",
+              transition: "background-color 5000s ease-in-out 0s",
             }}
           />
         </div>
         <button
           type="submit"
+          disabled={isLoading || !word.trim()}
           style={{
             padding: "12px 24px",
-            backgroundColor: "#4f46e5",
+            backgroundColor: isLoading ? "#9ca3af" : "#4f46e5",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: "pointer",
+            cursor: isLoading ? "not-allowed" : "pointer",
             fontWeight: 600,
             fontSize: "16px",
-            height: "46px"
+            height: "46px",
+            transition: "all 0.2s"
           }}
         >
-          Validar
+          {isLoading ? "Validando..." : "Validar"}
         </button>
       </form>
 
-      {result && (
+      {isLoading && (
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "center", 
+          alignItems: "center", 
+          padding: "20px",
+          color: "#4f46e5",
+          fontWeight: 500
+        }}>
+          <div className="spinner" style={{ marginRight: "10px" }}>⌛</div>
+          Procesando árbol de derivación...
+        </div>
+      )}
+
+      {result && !isLoading && (
         <div style={{ 
           display: "flex", 
           flexDirection: "column", 
