@@ -1,12 +1,13 @@
 import { useState } from "react";
 import "./App.css";
 import { GrammarForm } from "./components/GrammarForm";
-import type { Grammar } from "./types/grammar";
+import { WordValidator } from "./components/WordValidator";
+import type { GrammarSchema } from "./schemas/grammar";
 
 function App() {
-  const [grammar, setGrammar] = useState<Grammar | null>(null);
+  const [grammar, setGrammar] = useState<GrammarSchema | null>(null);
 
-  const handleGrammarSubmit = (newGrammar: Grammar) => {
+  const handleGrammarSubmit = (newGrammar: GrammarSchema) => {
     setGrammar(newGrammar);
     console.log("Gramática recibida:", newGrammar);
   };
@@ -90,13 +91,15 @@ function App() {
         ) : (
           <div style={{ 
             flex: 1,
-            backgroundColor: '#f9fafb',
+            backgroundColor: '#ffffff',
             borderRadius: '16px',
             padding: '24px',
             border: '1px solid #e5e7eb',
-            minHeight: 'min-content'
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
           }}>
-            <p style={{ color: '#6b7280', fontSize: '1rem' }}>Listo para generar árboles...</p>
+            <WordValidator grammar={grammar} />
           </div>
         )}
       </main>
