@@ -30,7 +30,7 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
         const validationResult = await presenter.validate("");
         setResult(validationResult);
       } catch (error) {
-        console.error("Error validando palabra vacía:", error);
+        // Silenced for production
       } finally {
         setIsLoading(false);
       }
@@ -44,7 +44,7 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
       const validationResult = await presenter.validate(word);
       setResult(validationResult);
     } catch (error) {
-      console.error("Error validando palabra:", error);
+      // Silenced for production
     } finally {
       setIsLoading(false);
     }

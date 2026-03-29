@@ -157,7 +157,11 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
       }}
     >
       <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.2fr 1.2fr",
+          gap: "12px",
+        }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
           <label htmlFor="terminals" style={labelStyle}>
