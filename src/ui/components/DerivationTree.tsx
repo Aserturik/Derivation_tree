@@ -151,17 +151,25 @@ export const DerivationTree: React.FC<{ root: DerivationNode }> = ({ root }) => 
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
         width: "100%",
         overflowX: "auto",
-        padding: "32px",
+        overflowY: "auto",
         backgroundColor: "#ffffff",
         borderRadius: "12px",
         border: "1px dashed #d1d5db",
       }}
     >
-      <TreeNode node={root} />
+      <div
+        style={{
+          display: "inline-flex",
+          minWidth: "100%",
+          justifyContent: "center",
+          padding: "40px",
+          boxSizing: "border-box"
+        }}
+      >
+        <TreeNode node={root} />
+      </div>
     </div>
   );
 };

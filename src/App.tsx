@@ -68,7 +68,7 @@ function App() {
         flex: 1, 
         padding: '40px', 
         overflowY: 'auto',
-        overflowX: 'auto',
+        overflowX: 'hidden',
         backgroundColor: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
@@ -100,6 +100,7 @@ function App() {
             display: 'flex',
             flexDirection: 'column',
             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+            minWidth: 0,
           }}>
             <GrammarVisualizer grammar={grammar} />
             <GeneralTree grammar={grammar} />

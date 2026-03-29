@@ -146,6 +146,7 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
               display: "flex",
               flexDirection: "column",
               gap: "12px",
+              minWidth: 0,
             }}>
               <h4 style={{ margin: 0, color: "#374151" }}>Árbol de Derivación Particular</h4>
               <DerivationTree root={result.validation.derivationTree} />
