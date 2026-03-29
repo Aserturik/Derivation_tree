@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import type { GrammarSchema } from "../../schemas/grammar";
 import { DerivationPresenter, type WordValidationState } from "../../presentation/presenters/DerivationPresenter";
+import { DerivationTree } from "./DerivationTree";
 
 interface WordValidatorProps {
   grammar: GrammarSchema;
@@ -139,23 +140,15 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
             )}
           </div>
 
-          {result.xml && (
+          {result.validation.derivationTree && (
             <div style={{
               flex: 1,
-              backgroundColor: "#1f2937",
-              borderRadius: "8px",
-              padding: "20px",
-              overflow: "auto"
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
             }}>
-              <h4 style={{ margin: "0 0 12px 0", color: "#e5e7eb" }}>Árbol de Derivación (XML)</h4>
-              <pre style={{
-                margin: 0,
-                color: "#10b981",
-                fontFamily: "monospace",
-                fontSize: "13px"
-              }}>
-                {result.xml}
-              </pre>
+              <h4 style={{ margin: 0, color: "#374151" }}>Árbol de Derivación Particular</h4>
+              <DerivationTree root={result.validation.derivationTree} />
             </div>
           )}
         </div>
