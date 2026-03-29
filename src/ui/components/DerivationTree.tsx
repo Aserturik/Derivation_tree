@@ -48,12 +48,17 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
     updateLines();
     window.addEventListener('resize', updateLines);
     
-    // Un pequeño delay para asegurar que los componentes de abajo se hayan renderizado
-    const timeoutId = setTimeout(updateLines, 50);
+    // Múltiples delays para atrapar los renderizados anidados de React
+    // Si los hijos se mueven, nosotros queremos recalcular nuestro SVG cuando terminen
+    const timeout1 = setTimeout(updateLines, 10);
+    const timeout2 = setTimeout(updateLines, 50);
+    const timeout3 = setTimeout(updateLines, 150);
 
     return () => {
       window.removeEventListener('resize', updateLines);
-      clearTimeout(timeoutId);
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+      clearTimeout(timeout3);
     };
   }, [hasChildren]);
 
@@ -77,7 +82,8 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
           boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
           position: "relative",
           left: `${idealCenter - 50}%`,
-          transition: "left 0.2s ease-out"
+          // Se quita la transición porque causaba que la medida del bounding client rect
+          // del padre midiera al hijo a la mitad del movimiento de la animación.
         }}
       >
         {node.symbol}
