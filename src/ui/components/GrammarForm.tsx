@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Production } from "../types/grammar";
-import { grammarSchema, type GrammarSchema } from "../schemas/grammar";
+import type { Production } from "../../types/grammar";
+import { grammarSchema, type GrammarSchema } from "../../schemas/grammar";
 
 interface GrammarFormProps {
   onGrammarSubmit: (grammar: GrammarSchema) => void;

@@ -1,18 +1,5 @@
 import type { GrammarSchema } from "./grammar";
-
-export interface DerivationNode {
-  id: number;
-  symbol: string;
-  isTerminal: boolean;
-  children?: DerivationNode[];
-}
-
-export interface ValidationResult {
-  isValid: boolean;
-  word: string;
-  derivationTree?: DerivationNode;
-  error?: string;
-}
+import type { DerivationNode, ValidationResult } from "../types/derivation";
 
 export class DerivationEngine {
   public grammar: GrammarSchema;

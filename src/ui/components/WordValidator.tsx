@@ -1,6 +1,6 @@
-import { useState } from "react";
-import type { GrammarSchema } from "../schemas/grammar";
-import { DerivationEngine, type ValidationResult } from "../schemas/derivation";
+import { useState, useMemo } from "react";
+import type { GrammarSchema } from "../../schemas/grammar";
+import { DerivationPresenter, type WordValidationState } from "../../presentation/presenters/DerivationPresenter";
 
 interface WordValidatorProps {
   grammar: GrammarSchema;
@@ -8,20 +8,15 @@ interface WordValidatorProps {
 
 export const WordValidator = ({ grammar }: WordValidatorProps) => {
   const [word, setWord] = useState("");
-  const [result, setResult] = useState<{ validation: ValidationResult, xml?: string } | null>(null);
+  const [result, setResult] = useState<WordValidationState | null>(null);
+
+  // Instanciamos el presenter solo cuando cambia la gramática
+  const presenter = useMemo(() => new DerivationPresenter(grammar), [grammar]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const engine = new DerivationEngine(grammar);
-    const validation = engine.validateWord(word);
-    
-    let xml: string | undefined;
-    if (validation.isValid && validation.derivationTree) {
-      xml = engine.generateXML(validation.derivationTree);
-    }
-    
-    setResult({ validation, xml });
+    const validationResult = presenter.validate(word);
+    setResult(validationResult);
   };
 
   return (

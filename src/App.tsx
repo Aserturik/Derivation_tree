@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-import { GrammarForm } from "./components/GrammarForm";
-import { WordValidator } from "./components/WordValidator";
+import { GrammarForm } from "./ui/components/GrammarForm";
+import { WordValidator } from "./ui/components/WordValidator";
 import type { GrammarSchema } from "./schemas/grammar";
 
 function App() {
