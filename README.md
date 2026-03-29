@@ -4,7 +4,7 @@ Este proyecto es una herramienta para la validación de palabras mediante gramá
 
 ---
 
-## 🚀 Cómo Correr el Proyecto
+## Cómo Correr el Proyecto
 
 La forma más rápida y sencilla es usando **Docker**.
 
@@ -26,29 +26,27 @@ La forma más rápida y sencilla es usando **Docker**.
 
 ---
 
-## 📂 Estructura del Proyecto y Arquitectura
+## Estructura del Proyecto y Arquitectura
 
 El proyecto sigue un patrón **MVP (Model-View-Presenter)** con interfaces estrictas en TypeScript para separar la lógica de negocio de la interfaz de usuario.
 
-### Capas
+Para un desglose detallado de la responsabilidad de cada carpeta y el flujo de datos, consulta la **[Guía de Arquitectura](docs/architecture.md)**.
 
-- **`src/domain` (Model)**: Contiene las interfaces, tipos y la lógica pura de la gramática y el motor de derivación. Independiente de React.
-- **`src/presentation` (Presenter)**: Orquestadores que manejan el estado y la lógica de flujo. Conectan el modelo con la vista.
-- **`src/ui` (View)**: Componentes de React puros encargados de renderizar la información y capturar eventos.
+### Capas Principales
 
-Para más detalle, consulta la [Documentación Técnica](docs/TECHNICAL_DOCS.md).
+- **`src/schemas` (Model)**: Definición y validación de datos mediante Zod.
+- **`src/presentation` (Presenter)**: Orquestadores que manejan la lógica de negocio y transformación de datos.
+- **`src/ui` (View)**: Componentes de React encargados del renderizado.
 
 ---
 
-## 📚 Rutas de Documentación
+## Rutas de Documentación
 
-| Documento                                              | Descripción                                                       |
-| :----------------------------------------------------- | :---------------------------------------------------------------- |
-| [📂 Estructura de Carpetas](docs/FOLDER_STRUCTURE.md)  | Responsabilidad de cada módulo y archivo.                         |
-| [⚙️ Especificaciones Técnicas](docs/TECHNICAL_DOCS.md) | Funciones clave, parámetros, retorno y dependencias.              |
-| [🔄 Flujo de Ejecución](docs/EXECUTION_FLOW.md)        | Cómo se procesa la gramática y se validan las palabras.           |
-| [🧪 Pruebas de Funcionamiento](docs/TEST_CASES.md)     | 4 Casos de prueba (2 válidos, 2 inválidos) con resultados.        |
-| [🤖 Guía para Agentes](Agents.md)                      | Roadmap y guía de implementación para desarrollo asistido por IA. |
+| Documento                                       | Descripción                                                       |
+| :---------------------------------------------- | :---------------------------------------------------------------- |
+| [Arquitectura](docs/architecture.md)            | Explicación técnica de la estructura MVP y carpetas.              |
+| [Pruebas de Funcionamiento](docs/TEST_CASES.md) | 4 Casos de prueba (2 válidos, 2 inválidos) con resultados.        |
+| [Guía para Agentes](Agents.md)                  | Roadmap y guía de implementación para desarrollo asistido por IA. |
 
 ---
 

@@ -9,17 +9,18 @@ El programa debe validar gramáticas formales $G_n = (\Sigma_T, \Sigma_{NT}, S, 
 
 ## 🛠️ Reglas de Arquitectura (MVP + Clean)
 
-### 1. Capa de Dominio (Model) - `src/domain/`
-- **Interfaces (`interfaces/`)**: Define contratos para `Grammar`, `Production`, `DerivationNode`, `ValidationResult`.
-- **Modelos (`models/`)**: Implementaciones puras de la lógica de gramáticas (clases o funciones sin efectos secundarios).
-- **Casos de Uso (`use-cases/`)**: El "Motor Lógico de Derivación". Debe ser independiente de React. Ej: `validateWord(grammar, word)`.
+Para una explicación técnica detallada de cada folder y el flujo de datos, referirse primero a la **[Documentación de Arquitectura](docs/architecture.md)**.
+
+### 1. Capa de Datos/Modelo - `src/schemas/` y `src/types/`
+- **Schemas**: Definición de la "forma" de los datos y validación en runtime usando **Zod**.
+- **Types**: Tipado estático para asegurar consistencia en el desarrollo.
 
 ### 2. Capa de Presentación (Presenter) - `src/presentation/`
-- **Presenters (`presenters/`)**: Orquestadores de estado. Usar hooks de React o clases que implementen interfaces de presentación. Manejan la comunicación entre la UI y el Dominio.
+- **Presenters**: Orquestadores que transforman datos del modelo en estructuras para la vista. Independientes de la implementación visual.
 
 ### 3. Capa de UI (View) - `src/ui/`
-- **Views (`views/`)**: Páginas principales (Ingreso de Gramática, Validación, Resultados).
-- **Components (`components/`)**: Elementos reutilizables (Inputs, Visualizador de Árbol, Tablas de Producción).
+- **Views**: Pantallas principales que consumen presenters.
+- **Components**: UI atómica y reutilizable.
 
 ---
 
@@ -59,3 +60,4 @@ El programa debe validar gramáticas formales $G_n = (\Sigma_T, \Sigma_{NT}, S, 
 - **NO usar atajos**: Cada lógica debe estar en su capa correspondiente.
 - **Comentarios**: Obligatorios en español y técnicos.
 - **Manejo de Errores**: Validar entradas de usuario antes de procesar.
+- **SIN EMOJIS**: Queda terminantemente prohibido el uso de emojis en el código fuente, comentarios de código o cualquier archivo de documentación (.md). Mantener un estilo sobrio y profesional.
