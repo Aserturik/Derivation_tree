@@ -140,6 +140,69 @@ export class DerivationEngine {
     return false;
   }
 
+  public generateGeneralTree(maxDepth: number = 7): DerivationNode {
+    this.nodeIdCounter = 0;
+    let nodeCount = 0;
+    const MAX_NODES = 1500;
+
+    const expand = (sequence: string[], depth: number): DerivationNode => {
+      nodeCount++;
+      const currentString = sequence.join("");
+      const isTerminal = sequence.every((sym) => this.grammar.terminals.includes(sym) || sym === "λ");
+
+      const node: DerivationNode = {
+        id: this.getNextId(),
+        symbol: currentString || "λ",
+        isTerminal: isTerminal,
+        children: [],
+      };
+
+      if (isTerminal) return node;
+
+      if (depth >= maxDepth || nodeCount >= MAX_NODES) {
+        node.children!.push({
+          id: this.getNextId(),
+          symbol: "...",
+          isTerminal: false,
+        });
+        return node;
+      }
+
+      // Derivación por la izquierda
+      const nonTerminalIndex = sequence.findIndex(
+        (sym) => !this.grammar.terminals.includes(sym) && sym !== "λ"
+      );
+      if (nonTerminalIndex === -1) return node;
+
+      const targetSymbol = sequence[nonTerminalIndex];
+      const applicableProductions = this.grammar.productions.filter(
+        (p) => p.left === targetSymbol
+      );
+
+      for (const prod of applicableProductions) {
+        let newSequence: string[];
+        if (prod.right.length === 0 || (prod.right.length === 1 && prod.right[0] === "λ")) {
+          newSequence = [
+            ...sequence.slice(0, nonTerminalIndex),
+            ...sequence.slice(nonTerminalIndex + 1),
+          ];
+          if (newSequence.length === 0) newSequence = ["λ"];
+        } else {
+          newSequence = [
+            ...sequence.slice(0, nonTerminalIndex),
+            ...prod.right,
+            ...sequence.slice(nonTerminalIndex + 1),
+          ];
+        }
+        node.children!.push(expand(newSequence, depth + 1));
+      }
+
+      return node;
+    };
+
+    return expand([this.grammar.axiom], 0);
+  }
+
   public generateXML(root: DerivationNode): string {
     const states: string[] = [];
     const transitions: string[] = [];

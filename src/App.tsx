@@ -3,6 +3,7 @@ import "./App.css";
 import { GrammarForm } from "./ui/components/GrammarForm";
 import { WordValidator } from "./ui/components/WordValidator";
 import { GrammarVisualizer } from "./ui/components/GrammarVisualizer";
+import { GeneralTree } from "./ui/components/GeneralTree";
 import type { GrammarSchema } from "./schemas/grammar";
 
 function App() {
@@ -101,6 +102,7 @@ function App() {
             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
           }}>
             <GrammarVisualizer grammar={grammar} />
+            <GeneralTree grammar={grammar} />
             <WordValidator grammar={grammar} />
           </div>
         )}
