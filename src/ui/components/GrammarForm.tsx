@@ -16,15 +16,17 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
   const [terminals, setTerminals] = useState("");
   const [nonTerminals, setNonTerminals] = useState("");
   const [axiom, setAxiom] = useState("");
-    const [productionRows, setProductionRows] = useState<ProductionRow[]>([
+  const [productionRows, setProductionRows] = useState<ProductionRow[]>([
     { left: "", right: "", id: Math.random().toString(36).substr(2, 9) },
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addRow = () => {
-    setProductionRows([...productionRows, { left: "", right: "", id: Math.random().toString(36).substr(2, 9) }]);
+    setProductionRows([
+      ...productionRows,
+      { left: "", right: "", id: Math.random().toString(36).substr(2, 9) },
+    ]);
   };
-
 
   const removeRow = (index: number) => {
     setProductionRows(productionRows.filter((_, i) => i !== index));
@@ -56,16 +58,23 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
     const parsedProductions: Production[] = [];
 
     for (const row of productionRows) {
-      if (!row.left.trim() || !row.right.trim()) continue;
+      if (!row.left.trim()) continue;
 
-      const alternatives = row.right
-        .split("|")
-        .map((s) => s.trim())
-        .filter(Boolean);
+      const alternatives = row.right.split("|").map((s) => s.trim());
+
       for (const alt of alternatives) {
-        const symbols = alt.includes(" ")
-          ? alt.split(" ").map((s) => s.trim())
-          : alt.split("");
+        // Si alt está vacío, es una producción lambda
+        let symbols: string[] = [];
+        const trimmedAlt = alt.trim();
+        if (trimmedAlt !== "" && trimmedAlt !== "λ" && trimmedAlt !== "ε") {
+          symbols = trimmedAlt.includes(" ")
+            ? trimmedAlt
+                .split(" ")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : trimmedAlt.split("");
+        }
+
         parsedProductions.push({
           left: row.left.trim(),
           right: symbols,
@@ -250,7 +259,9 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
                     : "#d1d5db",
                 }}
               >
-                <option value="" disabled>—</option>
+                <option value="" disabled>
+                  —
+                </option>
                 {nonTerminals
                   .split(",")
                   .map((s) => s.trim())
@@ -267,7 +278,7 @@ export const GrammarForm = ({ onGrammarSubmit }: GrammarFormProps) => {
                 aria-label={`Producciones de la fila ${index + 1}`}
                 value={row.right}
                 onChange={(e) => updateRow(index, "right", e.target.value)}
-                placeholder="E + T | T"
+                placeholder="λ"
                 style={{
                   ...inputStyle,
                   flex: 1,

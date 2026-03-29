@@ -14,22 +14,29 @@ export const productionSchema = z.object({
   left: nonTerminalSchema,
   right: z
     .union([z.string(), z.array(z.string())])
-    .transform((val) => (typeof val === "string" ? val.split("") : val))
-    .pipe(z.array(z.string()).min(1, "La producción no puede estar vacía")),
+    .transform((val) => {
+      if (typeof val === "string") {
+        const trimmed = val.trim();
+        if (trimmed === "" || trimmed === "λ" || trimmed === "ε") return [];
+        return trimmed.split("");
+      }
+      return val.filter((s) => s !== "λ" && s !== "ε");
+    })
+    .pipe(z.array(z.string())),
 });
 
 export const grammarSchema = z
   .object({
     terminals: z
       .array(terminalSchema)
-      .min(2, "Debe haber al menos 2 terminales"),
+      .min(1, "Debe haber al menos 1 terminal"),
     nonTerminals: z
       .array(nonTerminalSchema)
-      .min(3, "Debe haber al menos 3 no terminales"),
+      .min(1, "Debe haber al menos 1 no terminal"),
     axiom: nonTerminalSchema,
     productions: z
       .array(productionSchema)
-      .min(3, "Debe haber al menos 3 producciones"),
+      .min(1, "Debe haber al menos 1 producción"),
   })
   .refine(
     (data) => {

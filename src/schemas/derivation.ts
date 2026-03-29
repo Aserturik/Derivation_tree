@@ -16,76 +16,126 @@ export class DerivationEngine {
   public validateWord(word: string): ValidationResult {
     this.nodeIdCounter = 0;
 
-    // Validación previa: ¿Contiene símbolos que no están en la gramática?
+    // 1. Validación de símbolos
     for (const char of word) {
       if (!this.grammar.terminals.includes(char)) {
         return {
           isValid: false,
           word,
-          error: `Símbolo inválido: '${char}' no es un terminal de la gramática.`
+          error: `Símbolo inválido: '${char}' no es un terminal de la gramática.`,
         };
       }
     }
-    
+
     const root: DerivationNode = {
       id: this.getNextId(),
       symbol: this.grammar.axiom,
       isTerminal: false,
     };
 
-    const success = this.derive([root], word, 0);
+    // Usamos un Set para trackear estados visitados en la rama actual y evitar loops
+    const visitedSequences = new Set<string>();
 
-    if (success) {
-      return { isValid: true, word, derivationTree: root };
+    try {
+      const success = this.derive([root], word, visitedSequences);
+      if (success) {
+        return { isValid: true, word, derivationTree: root };
+      }
+
+      return {
+        isValid: false,
+        word,
+        error: `La palabra "${word}" no puede ser generada por esta gramática.`,
+      };
+    } catch (e: any) {
+      return {
+        isValid: false,
+        word,
+        error: e.message || "Error durante la validación.",
+      };
     }
-
-    return { 
-      isValid: false, 
-      word, 
-      error: "La palabra no pertenece a la gramática o supera el límite de profundidad (ambigüedad/loops)." 
-    };
   }
 
-  private derive(currentSequence: DerivationNode[], targetWord: string, depth: number): boolean {
-    if (depth > 50) return false;
+  private derive(
+    currentSequence: DerivationNode[],
+    targetWord: string,
+    visitedInBranch: Set<string>,
+  ): boolean {
+    const currentString = currentSequence.map((n) => n.symbol).join("");
 
-    const currentString = currentSequence.map(n => n.symbol).join('');
-    const isAllTerminals = currentSequence.every(n => n.isTerminal);
-    
-    if (isAllTerminals) {
-      return currentString === targetWord;
+    // 2. Control de Loops: Si ya vimos esta secuencia en esta rama de derivación, es un ciclo infinito
+    if (visitedInBranch.has(currentString)) {
+      throw new Error(
+        "Se detectó un loop infinito en la gramática (ej. A -> A).",
+      );
     }
 
-    const nonTerminalIndex = currentSequence.findIndex(n => !n.isTerminal);
+    // 3. Poda por longitud
+    const terminalCount = currentSequence.filter((n) => n.isTerminal).length;
+    if (terminalCount > targetWord.length) return false;
+
+    // 4. Protección contra crecimiento infinito
+    // Si la secuencia total es mucho más larga que el target, probablemente no lleguemos nunca
+    // Un margen de seguridad generoso (20) por si hay muchas producciones vacías
+    if (currentSequence.length > targetWord.length + 20) return false;
+
+    const isAllTerminals = currentSequence.every(
+      (n) => n.isTerminal || n.symbol === "λ",
+    );
+    if (isAllTerminals) {
+      const realWord = currentSequence
+        .filter((n) => n.symbol !== "λ")
+        .map((n) => n.symbol)
+        .join("");
+      return realWord === targetWord;
+    }
+
+    // Buscamos el primer No Terminal (Derivación por la izquierda)
+    const nonTerminalIndex = currentSequence.findIndex((n) => !n.isTerminal);
     if (nonTerminalIndex === -1) return false;
 
     const targetNode = currentSequence[nonTerminalIndex];
-
     const applicableProductions = this.grammar.productions.filter(
-      p => p.left === targetNode.symbol
+      (p) => p.left === targetNode.symbol,
     );
 
+    // Agregamos al historial de la rama
+    visitedInBranch.add(currentString);
+
     for (const prod of applicableProductions) {
-      const newChildren: DerivationNode[] = prod.right.map(symbol => ({
-        id: this.getNextId(),
-        symbol: symbol,
-        isTerminal: this.grammar.terminals.includes(symbol)
-      }));
+      const newChildren: DerivationNode[] =
+        prod.right.length > 0
+          ? prod.right.map((symbol) => ({
+              id: this.getNextId(),
+              symbol: symbol,
+              isTerminal: this.grammar.terminals.includes(symbol),
+            }))
+          : [
+              {
+                id: this.getNextId(),
+                symbol: "λ",
+                isTerminal: true,
+                children: [], // Nodo hoja explícito
+              },
+            ];
 
       targetNode.children = newChildren;
 
       const newSequence = [
         ...currentSequence.slice(0, nonTerminalIndex),
-        ...newChildren,
-        ...currentSequence.slice(nonTerminalIndex + 1)
+        ...(prod.right.length > 0 ? newChildren : []),
+        ...currentSequence.slice(nonTerminalIndex + 1),
       ];
 
-      if (this.derive(newSequence, targetWord, depth + 1)) {
+      if (this.derive(newSequence, targetWord, visitedInBranch)) {
         return true;
       }
 
       targetNode.children = undefined;
     }
+
+    // Limpiamos al salir (backtracking)
+    visitedInBranch.delete(currentString);
 
     return false;
   }
@@ -99,7 +149,7 @@ export class DerivationEngine {
 <state id="${node.id}" name="${node.symbol}">
 <x>${x.toFixed(1)}</x>
 <y>${y.toFixed(1)}</y>
-${node.id === 0 ? '<initial/>\n' : ''}${node.isTerminal ? '<final/>\n' : ''}</state>`);
+${node.id === 0 ? "<initial/>\n" : ""}${node.isTerminal ? "<final/>\n" : ""}</state>`);
 
       if (node.children) {
         const width = 120;
@@ -111,7 +161,7 @@ ${node.id === 0 ? '<initial/>\n' : ''}${node.isTerminal ? '<final/>\n' : ''}</st
 <from>${node.id}</from>
 <to>${child.id}</to>
 </transition>`);
-          
+
           traverse(child, startX, y + 100);
           startX += width;
         }
@@ -125,8 +175,8 @@ ${node.id === 0 ? '<initial/>\n' : ''}${node.isTerminal ? '<final/>\n' : ''}</st
 <structure>
 <type>fa</type>
 <automaton>
-<!--The list of states-->${states.join('')}
-<!--The list of transitions-->${transitions.join('')}
+<!--The list of states-->${states.join("")}
+<!--The list of transitions-->${transitions.join("")}
 </automaton>
 </structure>`;
   }

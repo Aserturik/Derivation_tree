@@ -22,7 +22,19 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!word.trim()) return;
+    if (!word.trim()) {
+      setIsLoading(true);
+      setResult(null);
+      try {
+        const validationResult = await presenter.validate("");
+        setResult(validationResult);
+      } catch (error) {
+        console.error("Error validando palabra vacía:", error);
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
 
     setIsLoading(true);
     setResult(null); // Limpiar previo
@@ -73,7 +85,7 @@ export const WordValidator = ({ grammar }: WordValidatorProps) => {
         </div>
         <button
           type="submit"
-          disabled={isLoading || !word.trim()}
+          disabled={isLoading}
           style={{
             padding: "12px 24px",
             backgroundColor: isLoading ? "#9ca3af" : "#4f46e5",
