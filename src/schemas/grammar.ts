@@ -12,7 +12,10 @@ const nonTerminalSchema = z
 
 export const productionSchema = z.object({
   left: nonTerminalSchema,
-  right: z.array(z.string()).min(1, "La producción no puede estar vacía"),
+  right: z
+    .union([z.string(), z.array(z.string())])
+    .transform((val) => (typeof val === "string" ? val.split("") : val))
+    .pipe(z.array(z.string()).min(1, "La producción no puede estar vacía")),
 });
 
 export const grammarSchema = z
@@ -31,25 +34,27 @@ export const grammarSchema = z
   .refine(
     (data) => {
       return data.productions.every((prod) =>
-        data.nonTerminals.includes(prod.left)
+        data.nonTerminals.includes(prod.left),
       );
     },
     {
-      message: "El lado izquierdo de cada producción debe ser un No Terminal definido",
+      message:
+        "El lado izquierdo de cada producción debe ser un No Terminal definido",
       path: ["productions"],
-    }
+    },
   )
   .refine(
     (data) => {
       const allSymbols = new Set([...data.terminals, ...data.nonTerminals]);
       return data.productions.every((prod) =>
-        prod.right.every((symbol) => allSymbols.has(symbol))
+        prod.right.every((symbol) => allSymbols.has(symbol)),
       );
     },
     {
-      message: "El lado derecho contiene símbolos que no son ni Terminales ni No Terminales",
+      message:
+        "El lado derecho contiene símbolos que no son ni Terminales ni No Terminales",
       path: ["productions"],
-    }
+    },
   )
   .refine(
     (data) => {
@@ -63,9 +68,10 @@ export const grammarSchema = z
       return true;
     },
     {
-      message: "Las producciones no pueden ser exactamente iguales (duplicadas)",
+      message:
+        "Las producciones no pueden ser exactamente iguales (duplicadas)",
       path: ["productions"],
-    }
+    },
   )
   .refine((data) => data.nonTerminals.includes(data.axiom), {
     message: "El símbolo axiomático debe estar incluido en los No Terminales",
