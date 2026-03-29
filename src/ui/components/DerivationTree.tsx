@@ -9,6 +9,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
   const hasChildren = node.children && node.children.length > 0;
   const containerRef = useRef<HTMLDivElement>(null);
   const [childrenCenters, setChildrenCenters] = useState<number[]>([]);
+  const [idealCenter, setIdealCenter] = useState<number>(50);
 
   useLayoutEffect(() => {
     if (!hasChildren || !containerRef.current) return;
@@ -37,6 +38,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
       });
 
       setChildrenCenters(centers);
+      if (centers.length > 0) {
+        setIdealCenter((centers[0] + centers[centers.length - 1]) / 2);
+      } else {
+        setIdealCenter(50);
+      }
     };
 
     updateLines();
@@ -69,7 +75,9 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
           textAlign: "center",
           zIndex: 2,
           boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-          position: "relative"
+          position: "relative",
+          left: `${idealCenter - 50}%`,
+          transition: "left 0.2s ease-out"
         }}
       >
         {node.symbol}
@@ -93,9 +101,14 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
             }} 
             aria-hidden="true"
           >
+            <defs>
+              <marker id={`arrowhead-${node.id}`} viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" />
+              </marker>
+            </defs>
             <title>Conexiones entre nodos</title>
             {node.children!.map((child: DerivationNode, index: number) => {
-              const startX = "50%";
+              const startX = `${idealCenter}%`;
               const startY = "0";
               
               // Usamos el centro real calculado, o un fallback razonable si aún no se calculó
@@ -111,6 +124,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
                   x1={startX} y1={startY} 
                   x2={endX} y2={endY} 
                   stroke="#9ca3af" strokeWidth="2" 
+                  markerEnd={`url(#arrowhead-${node.id})`}
                 />
               );
             })}
