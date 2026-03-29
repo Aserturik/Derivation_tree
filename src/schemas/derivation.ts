@@ -1,6 +1,10 @@
 import type { GrammarSchema } from "./grammar";
 import type { DerivationNode, ValidationResult } from "../types/derivation";
 
+/**
+ * Motor central de derivación para gramáticas formales.
+ * Se encarga de validar palabras, generar árboles de derivación y exportar a XML.
+ */
 export class DerivationEngine {
   public grammar: GrammarSchema;
   private nodeIdCounter: number = 0;
@@ -9,14 +13,19 @@ export class DerivationEngine {
     this.grammar = grammar;
   }
 
+  /** Genera un ID incremental único para cada nodo del árbol visual */
   private getNextId(): number {
     return this.nodeIdCounter++;
   }
 
+  /**
+   * Valida si una palabra pertenece al lenguaje definido por la gramática.
+   * Utiliza una búsqueda en profundidad (DFS) con derivación por la izquierda.
+   */
   public validateWord(word: string): ValidationResult {
     this.nodeIdCounter = 0;
 
-    // 1. Validación de símbolos
+    // 1. Verificación preliminar de símbolos terminales
     for (const char of word) {
       if (!this.grammar.terminals.includes(char)) {
         return {
@@ -33,7 +42,7 @@ export class DerivationEngine {
       isTerminal: false,
     };
 
-    // Usamos un Set para trackear estados visitados en la rama actual y evitar loops
+    // Set para detectar ciclos infinitos en la rama actual (ej: A -> B -> A)
     const visitedSequences = new Set<string>();
 
     try {
@@ -56,6 +65,12 @@ export class DerivationEngine {
     }
   }
 
+  /**
+   * Algoritmo recursivo de derivación.
+   * @param currentSequence Secuencia actual de nodos (nodos terminales y no terminales)
+   * @param targetWord Palabra objetivo a validar
+   * @param visitedInBranch Historial de secuencias en la rama actual para control de recursión
+   */
   private derive(
     currentSequence: DerivationNode[],
     targetWord: string,
@@ -63,22 +78,21 @@ export class DerivationEngine {
   ): boolean {
     const currentString = currentSequence.map((n) => n.symbol).join("");
 
-    // 2. Control de Loops: Si ya vimos esta secuencia en esta rama de derivación, es un ciclo infinito
+    // 2. Control de Loops: Evita recursión infinita si volvemos al mismo estado
     if (visitedInBranch.has(currentString)) {
       throw new Error(
         "Se detectó un loop infinito en la gramática (ej. A -> A).",
       );
     }
 
-    // 3. Poda por longitud
+    // 3. Poda por longitud: Si ya excedimos los terminales necesarios, esta rama no sirve
     const terminalCount = currentSequence.filter((n) => n.isTerminal).length;
     if (terminalCount > targetWord.length) return false;
 
-    // 4. Protección contra crecimiento infinito
-    // Si la secuencia total es mucho más larga que el target, probablemente no lleguemos nunca
-    // Un margen de seguridad generoso (20) por si hay muchas producciones vacías
+    // 4. Margen de seguridad para producciones vacías (λ)
     if (currentSequence.length > targetWord.length + 20) return false;
 
+    // Caso base: ¿Llegamos a una secuencia de puros terminales?
     const isAllTerminals = currentSequence.every(
       (n) => n.isTerminal || n.symbol === "λ",
     );
@@ -90,7 +104,7 @@ export class DerivationEngine {
       return realWord === targetWord;
     }
 
-    // Buscamos el primer No Terminal (Derivación por la izquierda)
+    // Estrategia: Derivación por la izquierda (expandir el primer No Terminal encontrado)
     const nonTerminalIndex = currentSequence.findIndex((n) => !n.isTerminal);
     if (nonTerminalIndex === -1) return false;
 
@@ -99,7 +113,6 @@ export class DerivationEngine {
       (p) => p.left === targetNode.symbol,
     );
 
-    // Agregamos al historial de la rama
     visitedInBranch.add(currentString);
 
     for (const prod of applicableProductions) {
@@ -115,7 +128,7 @@ export class DerivationEngine {
                 id: this.getNextId(),
                 symbol: "λ",
                 isTerminal: true,
-                children: [], // Nodo hoja explícito
+                children: [], 
               },
             ];
 
@@ -131,15 +144,18 @@ export class DerivationEngine {
         return true;
       }
 
+      // Backtracking: Si esta producción no llevó al éxito, limpiamos hijos
       targetNode.children = undefined;
     }
 
-    // Limpiamos al salir (backtracking)
     visitedInBranch.delete(currentString);
-
     return false;
   }
 
+  /**
+   * Genera el espacio de búsqueda completo (Árbol General) hasta un límite.
+   * Útil para visualizar todas las bifurcaciones posibles de la gramática.
+   */
   public generateGeneralTree(maxDepth: number = 7): DerivationNode {
     this.nodeIdCounter = 0;
     let nodeCount = 0;
@@ -159,6 +175,7 @@ export class DerivationEngine {
 
       if (isTerminal) return node;
 
+      // Límites preventivos para no colapsar el renderizado del navegador
       if (depth >= maxDepth || nodeCount >= MAX_NODES) {
         node.children!.push({
           id: this.getNextId(),
@@ -168,7 +185,6 @@ export class DerivationEngine {
         return node;
       }
 
-      // Derivación por la izquierda
       const nonTerminalIndex = sequence.findIndex(
         (sym) => !this.grammar.terminals.includes(sym) && sym !== "λ"
       );
@@ -203,6 +219,10 @@ export class DerivationEngine {
     return expand([this.grammar.axiom], 0);
   }
 
+  /**
+   * Transforma el árbol de derivación en un string XML compatible con JFLAP/Simuladores.
+   * Calcula coordenadas básicas (X, Y) para el posicionamiento de los estados.
+   */
   public generateXML(root: DerivationNode): string {
     const states: string[] = [];
     const transitions: string[] = [];
