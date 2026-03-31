@@ -5,11 +5,12 @@ import { WordValidator } from "./ui/components/WordValidator";
 import { GrammarVisualizer } from "./ui/components/GrammarVisualizer";
 import { GeneralTree } from "./ui/components/GeneralTree";
 import { DocumentationView } from "./ui/components/DocumentationView";
+import { TestCasesView } from "./ui/components/TestCasesView";
 import type { GrammarSchema } from "./schemas/grammar";
 
 function App() {
   const [grammar, setGrammar] = useState<GrammarSchema | null>(null);
-  const [showDocs, setShowDocs] = useState<boolean>(false);
+  const [activeView, setActiveView] = useState<'none' | 'docs' | 'tests'>('none');
 
   const handleGrammarSubmit = (newGrammar: GrammarSchema) => {
     setGrammar(newGrammar);
@@ -76,28 +77,47 @@ function App() {
               color: "#111827",
             }}
           >
-            {showDocs ? 'Documentación Técnica' : 'Visualización de Árboles'}
+            {activeView === 'docs' ? 'Documentación Técnica' : activeView === 'tests' ? 'Casos de Prueba' : 'Visualización de Árboles'}
           </h2>
-          <button
-            type="button"
-            onClick={() => setShowDocs(!showDocs)}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: showDocs ? '#ef4444' : '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-          >
-            {showDocs ? 'Cerrar Documentación' : 'Ver Documentación'}
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              type="button"
+              onClick={() => setActiveView(activeView === 'tests' ? 'none' : 'tests')}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: activeView === 'tests' ? '#ef4444' : '#10b981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              {activeView === 'tests' ? 'Cerrar Casos' : 'Casos de prueba'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveView(activeView === 'docs' ? 'none' : 'docs')}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: activeView === 'docs' ? '#ef4444' : '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              {activeView === 'docs' ? 'Cerrar Documentación' : 'Ver Documentación'}
+            </button>
+          </div>
         </div>
 
-        {showDocs ? (
+        {activeView === 'docs' ? (
           <div
             style={{
               flex: 1,
@@ -110,6 +130,20 @@ function App() {
             }}
           >
             <DocumentationView />
+          </div>
+        ) : activeView === 'tests' ? (
+          <div
+            style={{
+              flex: 1,
+              backgroundColor: "#ffffff",
+              borderRadius: "16px",
+              padding: "24px",
+              border: "1px solid #e5e7eb",
+              overflowY: "auto",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+            }}
+          >
+            <TestCasesView />
           </div>
         ) : !grammar ? (
           <div
