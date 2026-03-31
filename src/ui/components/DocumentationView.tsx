@@ -867,7 +867,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
       </section>
 
       {/* 4. DOCUMENTACIÓN EXTENDIDA */}
-      <section style={{ marginBottom: "40px" }}>
+      <section style={{ marginBottom: "60px" }}>
         <div
           style={{
             display: "flex",
@@ -888,21 +888,93 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
             04
           </div>
           <h2 style={{ fontSize: "1.8rem", color: "#1e293b", margin: 0 }}>
-            Documentación Extendida
+            Documentación y Trazabilidad
           </h2>
         </div>
 
         <p
           style={{
-            marginBottom: "24px",
+            marginBottom: "32px",
             fontSize: "1.05rem",
             lineHeight: "1.6",
           }}
         >
           Para profundizar en los detalles del proyecto, casos de uso o
-          implementaciones futuras, te recomendamos consultar los archivos
-          Markdown incluidos en el repositorio oficial:
+          implementaciones futuras, puedes consultar los archivos Markdown o
+          revisar las sesiones de desarrollo en OpenCode.
         </p>
+
+        {/* OPENCODE SESSIONS */}
+        <div
+          style={{
+            backgroundColor: "#f1f5f9",
+            borderRadius: "16px",
+            padding: "32px",
+            marginBottom: "32px",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <h3
+            style={{
+              margin: "0 0 16px 0",
+              color: "#0f172a",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            🗣️ Sesiones de Desarrollo (OpenCode)
+          </h3>
+          <p style={{ color: "#475569", marginBottom: "24px" }}>
+            Puedes ver cómo se construyó este sistema, los desafíos técnicos y
+            las decisiones de arquitectura en tiempo real:
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {[
+              {
+                id: "session-1",
+                title: "1. Estructura y Lógica Base",
+                url: "https://opncd.ai/share/mSpsGkVU",
+              },
+              {
+                id: "session-2",
+                title: "2. Implementación de Gramáticas",
+                url: "https://opncd.ai/share/S6Hi3jcs",
+              },
+              {
+                id: "session-3",
+                title: "3. Refactorización y UI",
+                url: "https://opncd.ai/share/z3Bhz7yI",
+              },
+            ].map((session) => (
+              <a
+                key={session.id}
+                href={session.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "block",
+                  padding: "16px",
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  color: "#3b82f6",
+                  fontWeight: "500",
+                  border: "1px solid #e2e8f0",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {session.title} →
+              </a>
+            ))}
+          </div>
+        </div>
 
         <div
           style={{
@@ -919,12 +991,25 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
               border: "1px solid #e2e8f0",
             }}
           >
-            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+            <h4
+              style={{
+                margin: "0 0 8px 0",
+                color: "#0f172a",
+                fontSize: "1.1rem",
+              }}
+            >
               📖 docs/user_manual.md
             </h4>
-            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
-              Guía paso a paso sobre cómo interactuar con la interfaz gráfica, cargar
-              gramáticas y visualizar los árboles.
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.9rem",
+                color: "#475569",
+                lineHeight: "1.5",
+              }}
+            >
+              Guía paso a paso sobre cómo interactuar con la interfaz gráfica,
+              cargar gramáticas y visualizar los árboles.
             </p>
           </div>
           <div
@@ -935,12 +1020,25 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
               border: "1px solid #e2e8f0",
             }}
           >
-            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+            <h4
+              style={{
+                margin: "0 0 8px 0",
+                color: "#0f172a",
+                fontSize: "1.1rem",
+              }}
+            >
               🏗️ docs/architecture.md
             </h4>
-            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
-              Desglose técnico en profundidad de la arquitectura MVP, el flujo de datos
-              unidireccional y las decisiones de diseño.
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.9rem",
+                color: "#475569",
+                lineHeight: "1.5",
+              }}
+            >
+              Desglose técnico en profundidad de la arquitectura MVP, el flujo
+              de datos unidireccional y las decisiones de diseño.
             </p>
           </div>
           <div
@@ -951,12 +1049,25 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
               border: "1px solid #e2e8f0",
             }}
           >
-            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+            <h4
+              style={{
+                margin: "0 0 8px 0",
+                color: "#0f172a",
+                fontSize: "1.1rem",
+              }}
+            >
               🧪 docs/TEST_CASES.md
             </h4>
-            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
-              Casos de prueba predefinidos (válidos e inválidos) para comprobar la robustez
-              del motor matemático.
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.9rem",
+                color: "#475569",
+                lineHeight: "1.5",
+              }}
+            >
+              Casos de prueba predefinidos (válidos e inválidos) para comprobar
+              la robustez del motor matemático.
             </p>
           </div>
           <div
@@ -967,10 +1078,23 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
               border: "1px solid #e2e8f0",
             }}
           >
-            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+            <h4
+              style={{
+                margin: "0 0 8px 0",
+                color: "#0f172a",
+                fontSize: "1.1rem",
+              }}
+            >
               🤖 Agents.md
             </h4>
-            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.9rem",
+                color: "#475569",
+                lineHeight: "1.5",
+              }}
+            >
               Roadmap, prompts y directrices para continuar el desarrollo
               asistido por IA.
             </p>

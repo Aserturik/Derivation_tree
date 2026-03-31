@@ -13,7 +13,7 @@ La forma más rápida y sencilla es usando **Docker**.
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Ejecución
+### Ejecución con Docker
 
 1. Clona el repositorio.
 2. En la raíz del proyecto, ejecuta:
@@ -23,6 +23,34 @@ La forma más rápida y sencilla es usando **Docker**.
    ```
 
 3. El proyecto estará disponible en: [http://localhost:5173](http://localhost:5173)
+
+### Ejecución Local con Node
+
+Si preferís correrlo directamente en tu máquina:
+
+1. Instalá las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+2. Iniciá el servidor de desarrollo:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Abrí [http://localhost:5173](http://localhost:5173) en tu navegador.
+
+---
+
+## 🗣️ Conversaciones de Desarrollo (OpenCode)
+
+Para entender cómo se codificó el sistema y ver los procesos de razonamiento, puedes revisar estas sesiones:
+
+1. [Sesión 1 - Estructura y Lógica Base](https://opncd.ai/share/mSpsGkVU)
+2. [Sesión 2 - Implementación de Gramáticas](https://opncd.ai/share/S6Hi3jcs)
+3. [Sesión 3 - Refactorización y UI](https://opncd.ai/share/z3Bhz7yI)
 
 ---
 
