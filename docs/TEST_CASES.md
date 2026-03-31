@@ -19,6 +19,10 @@ Diseñaremos una gramática clásica de contexto libre (para mostrar anidamiento
   - `B -> aBb`
   - `B -> ab`
 
+  ![alt text](../public/image.png)
+
+- **Árbol de Derivación general:**
+![alt text](../public/image1.png)
 ### Caso de Prueba 1: Pertenencia Válida (Éxito)
 
 - **Palabra a validar:** `aaaabbbb`
@@ -31,6 +35,9 @@ Diseñaremos una gramática clásica de contexto libre (para mostrar anidamiento
   4. `aaaBbbb` $\to$ `aaaabbbb`
 - **Visualización:** El sistema dibujará el Árbol de Derivación demostrando cómo la palabra crece desde el centro hacia afuera, que es la marca registrada de una gramática libre de contexto.
 
+**Árbol de Derivación particular:**
+![alt text](../public/image2.png)
+
 ### Caso de Prueba 2: Pertenencia Inválida (Rechazo)
 
 - **Palabra a validar:** `aabbb`
@@ -38,6 +45,8 @@ Diseñaremos una gramática clásica de contexto libre (para mostrar anidamiento
 - **Explicación del Motor:**
   La palabra está desbalanceada. El motor expande obligatoriamente `S -> aAb` y luego `A -> aBb`, generando como mínimo la base de dos 'a' y dos 'b'. Nunca podrá encajar con el tamaño o forma de `aabbb`. Se detiene rápido sin hacer loops raros y rechazará la cadena limpiamente.
 
+**Error por no pertenencia:**
+![alt text](../public/image3.png)
 ---
 
 ## 🧪 Gramática 2: Lenguaje $a^+bc$ (Lineal con Recursión)
@@ -53,6 +62,9 @@ Diseñaremos una gramática que cumple estrictamente con los requisitos, pero qu
   - `A -> bB`
   - `B -> c`
 
+  ![alt text](../public/image4.png)
+  ![alt text](../public/image5.png)
+
 ### Caso de Prueba 3: Pertenencia Válida (Éxito)
 
 - **Palabra a validar:** `aabc`
@@ -65,6 +77,9 @@ Diseñaremos una gramática que cumple estrictamente con los requisitos, pero qu
   4. `aabB` $\to$ `aabc`
 - **Visualización:** El Árbol General mostrará una expansión lineal por la derecha de 5 niveles de profundidad. Sigue siendo muy limpio para la interfaz pero con más dinamismo.
 
+**Árbol de Derivación particular:**
+![alt text](../public/image6.png)
+
 ### Caso de Prueba 4: Terminación Incorrecta (Rechazo)
 
 - **Palabra a validar:** `aac`
@@ -73,3 +88,6 @@ Diseñaremos una gramática que cumple estrictamente con los requisitos, pero qu
   1. El motor puede derivar `S -> aS -> aaA` intentando armar las dos 'a'.
   2. Pero al llegar a `A`, la única salida válida es `A -> bB`, obligando a que venga una 'b'.
   3. Como la palabra tiene una 'c' en lugar de la 'b' esperada, las ramas se cortan ahí mismo y rechaza la cadena.
+
+**Error por no pertenencia:**
+![alt text](../public/image7.png)
