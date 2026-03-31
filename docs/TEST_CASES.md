@@ -6,67 +6,70 @@ Puedes ingresar estas gramáticas exactas en la interfaz del programa para repli
 
 ---
 
-## 🧪 Gramática 1: Lenguaje de Palíndromos (Libre de Contexto)
+## 🧪 Gramática 1: Lenguaje $a^n b^n$ anidado (Libre de Contexto)
 
-Diseñaremos una gramática que genere palíndromos binarios de longitud par.
-* **No Terminales ($\Sigma_{NT}$):** `S`
-* **Terminales ($\Sigma_T$):** `0, 1`
-* **Símbolo Inicial:** `S`
-* **Producciones:**
-  * `S -> 0S0`
-  * `S -> 1S1`
-  * `S -> ε` *(cadena vacía, dejar campo derecho en blanco)*
+Diseñaremos una gramática clásica de contexto libre (para mostrar anidamiento), adaptada para cumplir estrictamente con los requisitos (≥2 terminales, ≥3 no terminales, ≥3 producciones) manteniendo un árbol pequeño y simétrico.
+
+- **No Terminales ($\Sigma_{NT}$):** `S, A, B`
+- **Terminales ($\Sigma_T$):** `a, b`
+- **Símbolo Inicial:** `S`
+- **Producciones:**
+  - `S -> aAb`
+  - `A -> aBb`
+  - `B -> aBb`
+  - `B -> ab`
 
 ### Caso de Prueba 1: Pertenencia Válida (Éxito)
-* **Palabra a validar:** `0110`
-* **Resultado Esperado:** Válida (Aceptada)
-* **Explicación del Motor:**
-  El algoritmo aplicará derivación por la izquierda evaluando el árbol en profundidad. Encontrará el siguiente camino exitoso:
-  1. `S` $\to$ `0S0`
-  2. `0S0` $\to$ `01S10`
-  3. `01S10` $\to$ `01ε10` $\to$ `0110`
-* **Visualización:** El sistema deberá dibujar el Árbol de Derivación Particular demostrando las sustituciones paso a paso.
+
+- **Palabra a validar:** `aaaabbbb`
+- **Resultado Esperado:** Válida (Aceptada)
+- **Explicación del Motor:**
+  Sin reglas unitarias confusas (como S->A o A->B), esta gramática es directa y genera infinitas palabras balanceadas ($a^n b^n$ para $n \ge 3$). El árbol crece directo sin pasos intermedios inútiles:
+  1. `S` $\to$ `aAb`
+  2. `aAb` $\to$ `aaBbb`
+  3. `aaBbb` $\to$ `aaaBbbb`
+  4. `aaaBbbb` $\to$ `aaaabbbb`
+- **Visualización:** El sistema dibujará el Árbol de Derivación demostrando cómo la palabra crece desde el centro hacia afuera, que es la marca registrada de una gramática libre de contexto.
 
 ### Caso de Prueba 2: Pertenencia Inválida (Rechazo)
-* **Palabra a validar:** `010`
-* **Resultado Esperado:** Inválida (Rechazada)
-* **Explicación del Motor:**
-  La palabra es un palíndromo, pero de longitud *impar*. Nuestra gramática solo admite palíndromos de longitud par. El motor evaluará recursivamente las combinaciones, pero se detendrá por restricciones de longitud o por incompatibilidad de los extremos. Agotará las opciones y devolverá un mensaje de error limpio, sin colgar la interfaz.
+
+- **Palabra a validar:** `aabbb`
+- **Resultado Esperado:** Inválida (Rechazada)
+- **Explicación del Motor:**
+  La palabra está desbalanceada. El motor expande obligatoriamente `S -> aAb` y luego `A -> aBb`, generando como mínimo la base de dos 'a' y dos 'b'. Nunca podrá encajar con el tamaño o forma de `aabbb`. Se detiene rápido sin hacer loops raros y rechazará la cadena limpiamente.
 
 ---
 
-## 🧪 Gramática 2: Lenguaje $a^*b^*$ (Regular)
+## 🧪 Gramática 2: Lenguaje $a^+bc$ (Lineal con Recursión)
 
-Diseñaremos una gramática regular que exija cero o más 'a' seguidas de cero o más 'b'.
-* **No Terminales ($\Sigma_{NT}$):** `S, A, B`
-* **Terminales ($\Sigma_T$):** `a, b`
-* **Símbolo Inicial:** `S`
-* **Producciones:**
-  * `S -> A`
-  * `A -> aA`
-  * `A -> B`
-  * `B -> bB`
-  * `B -> ε`
+Diseñaremos una gramática que cumple estrictamente con los requisitos, pero que incluye una recursión para generar infinitas palabras del estilo "cualquier cantidad de 'a' seguidas de una 'b' y una 'c'".
+
+- **No Terminales ($\Sigma_{NT}$):** `S, A, B`
+- **Terminales ($\Sigma_T$):** `a, b, c`
+- **Símbolo Inicial:** `S`
+- **Producciones:**
+  - `S -> aS`
+  - `S -> aA`
+  - `A -> bB`
+  - `B -> c`
 
 ### Caso de Prueba 3: Pertenencia Válida (Éxito)
-* **Palabra a validar:** `aabb`
-* **Resultado Esperado:** Válida (Aceptada)
-* **Explicación del Motor:**
-  1. `S` $\to$ `A`
-  2. `A` $\to$ `aA`
-  3. `aA` $\to$ `aaA`
-  4. `aaA` $\to$ `aaB`
-  5. `aaB` $\to$ `aabB`
-  6. `aabB` $\to$ `aabbB`
-  7. `aabbB` $\to$ `aabbε` $\to$ `aabb`
-* **Visualización:** El Árbol General mostrará las expansiones lineales características de una gramática regular por la derecha, mientras que el árbol particular mostrará la traza exacta listada arriba.
 
-### Caso de Prueba 4: Orden Inverso (Rechazo por Backtracking)
-* **Palabra a validar:** `bbaa`
-* **Resultado Esperado:** Inválida (Rechazada)
-* **Explicación del Motor:**
-  El usuario ingresa las letras correctas, pero en el orden equivocado para la gramática definida. 
-  1. El motor intentará derivar `S` $\to$ `A` $\to$ `B` (para poder insertar una `b`).
-  2. Logrará generar `bbB`.
-  3. Sin embargo, a partir del estado `B`, las únicas producciones posibles son `bB` o `ε`. Es matemáticamente imposible volver atrás o generar una `a` desde `B`.
-  4. El Backtracking confirmará que no existe ruta posible, fallando la validación y mostrando la alerta visual de rechazo.
+- **Palabra a validar:** `aabc`
+- **Resultado Esperado:** Válida (Aceptada)
+- **Explicación del Motor:**
+  Gracias a la recursión `S -> aS`, el lenguaje es infinito ($a^+ bc$). Para derivar `aabc`, hace esto:
+  1. `S` $\to$ `aS`
+  2. `aS` $\to$ `aaA`
+  3. `aaA` $\to$ `aabB`
+  4. `aabB` $\to$ `aabc`
+- **Visualización:** El Árbol General mostrará una expansión lineal por la derecha de 5 niveles de profundidad. Sigue siendo muy limpio para la interfaz pero con más dinamismo.
+
+### Caso de Prueba 4: Terminación Incorrecta (Rechazo)
+
+- **Palabra a validar:** `aac`
+- **Resultado Esperado:** Inválida (Rechazada)
+- **Explicación del Motor:**
+  1. El motor puede derivar `S -> aS -> aaA` intentando armar las dos 'a'.
+  2. Pero al llegar a `A`, la única salida válida es `A -> bB`, obligando a que venga una 'b'.
+  3. Como la palabra tiene una 'c' en lugar de la 'b' esperada, las ramas se cortan ahí mismo y rechaza la cadena.

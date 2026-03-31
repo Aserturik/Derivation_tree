@@ -16,8 +16,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
   const hasChildren = node.children && node.children.length > 0;
   const isLeaf = !hasChildren;
   const containerRef = useRef<HTMLDivElement>(null);
-  const [childrenCenters, setChildrenCenters] = useState<number[]>([]);
-  const [idealCenter, setIdealCenter] = useState<number>(50);
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  
+  // Guardamos las coordenadas exactas en píxeles
+  const [lineCoords, setLineCoords] = useState<{startX: number, endX: number}[]>([]);
 
   // Matemáticas para calcular el largo de la línea punteada:
   // 40px de marginTop del contenedor de hijos + 44px de altura del nodo padre = 84px por nivel
@@ -29,31 +32,34 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
     if (!hasChildren || !containerRef.current) return;
 
     const updateLines = () => {
-      if (!containerRef.current) return;
+      if (!nodeRef.current || !svgRef.current || !containerRef.current) return;
       
       const childrenContainer = containerRef.current.querySelector('.children-container') as HTMLDivElement;
       if (!childrenContainer) return;
 
-      const childrenNodes = Array.from(childrenContainer.children).filter(child => child.tagName !== 'svg');
-      const containerRect = childrenContainer.getBoundingClientRect();
+      const parentRect = nodeRef.current.getBoundingClientRect();
+      const svgRect = svgRef.current.getBoundingClientRect();
       
-      const centers = childrenNodes.map(child => {
+      // Coordenadas exactas en píxeles, proyectadas dentro del sistema de coordenadas del SVG
+      // Esto ignora scroll, márgenes, flexbox o lo que sea, porque usa la caja real en pantalla
+      const startX = (parentRect.left + (parentRect.width / 2)) - svgRect.left;
+      
+      const childrenNodes = Array.from(childrenContainer.children).filter(child => child.tagName !== 'svg');
+      
+      const coords = childrenNodes.map(child => {
+        // Buscamos el nodo .tree-node del hijo
         const childNode = child.querySelector('.tree-node') as HTMLDivElement;
-        if (!childNode) return 50; // fallback
+        if (!childNode) return { startX, endX: startX }; // fallback
         
         const childRect = childNode.getBoundingClientRect();
-        if (containerRect.width === 0) return 50;
         
-        const relativeCenter = (childRect.left + (childRect.width / 2)) - containerRect.left;
-        return (relativeCenter / containerRect.width) * 100;
+        // Lo mismo: centro del hijo mapeado al sistema del SVG
+        const endX = (childRect.left + (childRect.width / 2)) - svgRect.left;
+        
+        return { startX, endX };
       });
 
-      setChildrenCenters(centers);
-      if (centers.length > 0) {
-        setIdealCenter((centers[0] + centers[centers.length - 1]) / 2);
-      } else {
-        setIdealCenter(50);
-      }
+      setLineCoords(coords);
     };
 
     updateLines();
@@ -69,12 +75,14 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
       clearTimeout(timeout2);
       clearTimeout(timeout3);
     };
-  }, [hasChildren]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasChildren, node]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", padding: "0 16px" }} ref={containerRef}>
       {/* Nodo Actual */}
       <div
+        ref={nodeRef}
         className="tree-node"
         style={{
           height: "44px", // Altura fija para que el cálculo matemático de las líneas punteadas sea perfecto
@@ -95,7 +103,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
           zIndex: 2,
           boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
           position: "relative",
-          left: `${idealCenter - 50}%`,
+          // ¡Eliminamos el desplazamiento (left)! El padre se queda exactamente en su centro natural
         }}
       >
         {node.symbol}
@@ -109,7 +117,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
             flexDirection: "column", 
             alignItems: "center", 
             position: "relative", 
-            left: `${idealCenter - 50}%` 
+            // Eliminamos el desplazamiento aquí también
           }}
         >
           <div 
@@ -143,6 +151,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
         <div className="children-container" style={{ display: "flex", flexDirection: "row", justifyContent: "center", width: "100%", marginTop: "40px", position: "relative" }}>
           
           <svg 
+            ref={svgRef}
             style={{ 
               position: "absolute", 
               top: "-40px", 
@@ -162,13 +171,13 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
             </defs>
             <title>Conexiones entre nodos</title>
             {node.children!.map((child: DerivationNode, index: number) => {
-              const startX = `${idealCenter}%`;
+              const coords = lineCoords[index];
+              
+              // Usamos coordenadas exactas en píxeles (o caemos al 50% inicial de fallback visual)
+              const startX = coords ? `${coords.startX}px` : "50%";
+              const endX = coords ? `${coords.endX}px` : `${(100 / (node.children!.length * 2)) + (index * (100 / node.children!.length))}%`;
+              
               const startY = "0";
-              
-              const endX = childrenCenters.length > 0 && childrenCenters[index] !== undefined
-                ? `${childrenCenters[index]}%` 
-                : `${(100 / (node.children!.length * 2)) + (index * (100 / node.children!.length))}%`;
-              
               const endY = "100%";
 
               return (
@@ -184,7 +193,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
           </svg>
 
           {node.children!.map((child: DerivationNode, index: number) => (
-            <div key={`${child.id}-${index}`} style={{ display: "flex", justifyContent: "center" }}>
+            <div key={`${child.id}-${index}`} style={{ display: "flex", justifyContent: "center", width: node.children!.length === 1 ? "100%" : "auto" }}>
               <TreeNode node={child} depth={depth + 1} maxDepth={maxDepth} />
             </div>
           ))}
