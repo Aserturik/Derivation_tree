@@ -44,6 +44,7 @@ Para un desglose detallado de la responsabilidad de cada carpeta y el flujo de d
 
 | Documento                                       | Descripción                                                       |
 | :---------------------------------------------- | :---------------------------------------------------------------- |
+| [Manual de Usuario](docs/user_manual.md)        | Documentación del programa y guía de uso de la interfaz web.      |
 | [Arquitectura](docs/architecture.md)            | Explicación técnica de la estructura MVP y carpetas.              |
 | [Pruebas de Funcionamiento](docs/TEST_CASES.md) | 4 Casos de prueba (2 válidos, 2 inválidos) con resultados.        |
 | [Guía para Agentes](Agents.md)                  | Roadmap y guía de implementación para desarrollo asistido por IA. |

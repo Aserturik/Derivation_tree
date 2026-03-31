@@ -866,6 +866,118 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, depth, maxDepth }) => {
         </div>
       </section>
 
+      {/* 4. DOCUMENTACIÓN EXTENDIDA */}
+      <section style={{ marginBottom: "40px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            marginBottom: "24px",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#f43f5e",
+              color: "white",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              fontWeight: "bold",
+            }}
+          >
+            04
+          </div>
+          <h2 style={{ fontSize: "1.8rem", color: "#1e293b", margin: 0 }}>
+            Documentación Extendida
+          </h2>
+        </div>
+
+        <p
+          style={{
+            marginBottom: "24px",
+            fontSize: "1.05rem",
+            lineHeight: "1.6",
+          }}
+        >
+          Para profundizar en los detalles del proyecto, casos de uso o
+          implementaciones futuras, te recomendamos consultar los archivos
+          Markdown incluidos en el repositorio oficial:
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
+          }}
+        >
+          <div
+            style={{
+              padding: "20px",
+              backgroundColor: "#f8fafc",
+              borderRadius: "12px",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+              📖 docs/user_manual.md
+            </h4>
+            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
+              Guía paso a paso sobre cómo interactuar con la interfaz gráfica, cargar
+              gramáticas y visualizar los árboles.
+            </p>
+          </div>
+          <div
+            style={{
+              padding: "20px",
+              backgroundColor: "#f8fafc",
+              borderRadius: "12px",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+              🏗️ docs/architecture.md
+            </h4>
+            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
+              Desglose técnico en profundidad de la arquitectura MVP, el flujo de datos
+              unidireccional y las decisiones de diseño.
+            </p>
+          </div>
+          <div
+            style={{
+              padding: "20px",
+              backgroundColor: "#f8fafc",
+              borderRadius: "12px",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+              🧪 docs/TEST_CASES.md
+            </h4>
+            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
+              Casos de prueba predefinidos (válidos e inválidos) para comprobar la robustez
+              del motor matemático.
+            </p>
+          </div>
+          <div
+            style={{
+              padding: "20px",
+              backgroundColor: "#f8fafc",
+              borderRadius: "12px",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <h4 style={{ margin: "0 0 8px 0", color: "#0f172a", fontSize: "1.1rem" }}>
+              🤖 Agents.md
+            </h4>
+            <p style={{ margin: 0, fontSize: "0.9rem", color: "#475569", lineHeight: "1.5" }}>
+              Roadmap, prompts y directrices para continuar el desarrollo
+              asistido por IA.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <footer
         style={{
           textAlign: "center",
